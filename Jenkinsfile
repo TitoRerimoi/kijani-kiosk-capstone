@@ -6,6 +6,7 @@ pipeline {
         PRODUCTION_NAMESPACE = 'kijani-project'
         APP_NAME = 'kk-payments'
         IMAGE = 'kijanikiosk/kk-payments:v1.1.0'
+        KUBECONFIG = '/tmp/jenkins-config'
     }
 
     stages {
