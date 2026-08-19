@@ -1,0 +1,26 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Terraform variable files may contain secrets
+*.tfvars
+*.tfvars.json
+
+# Ansible
+*.retry
+
+# Local environment
+.env
+.env.*
+
+# Kubernetes secrets
+k8s/*secret*.yaml
+k8s/*secrets*.yaml
+
+# OS / editor
+.DS_Store
+.vscode/
+.venv/

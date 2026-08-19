@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kk-payments
+  namespace: kijani-staging
+  labels:
+    app: kk-payments
+    environment: staging
+  annotations:
+    kubernetes.io/change-cause: "Deploy kk-payments staging v1.1.0"
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: kk-payments
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: kk-payments
+        environment: staging
+
+    spec:
+      containers:
+        - name: kk-payments
+          image: kijanikiosk/kk-payments:v1.1.0
+          imagePullPolicy: IfNotPresent
+
+          envFrom:
+            - configMapRef:
+                name: kk-payments-config
+            - secretRef:
+                name: kk-payments-secrets
+
+          ports:
+            - containerPort: 5000
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

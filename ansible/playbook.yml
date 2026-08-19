@@ -1,0 +1,35 @@
+---
+- name: Configure KijaniKiosk staging environment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    ansible_python_interpreter: "{{ playbook_dir }}/../.venv/bin/python"
+    staging_namespace: kijani-staging
+
+    payments_config:
+      NODE_ENV: "staging"
+      DB_HOST: "postgres-staging.kijani.internal"
+      DB_PORT: "5432"
+      LOG_LEVEL: "info"
+      APP_PORT: "5000"
+      MAX_CONNECTIONS: "10"
+
+  tasks:
+    - name: Configure kk-payments staging ConfigMap
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ lookup('env', 'KUBECONFIG') | default(omit) }}"
+        context: minikube
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: kk-payments-config
+            namespace: "{{ staging_namespace }}"
+            labels:
+              app: kk-payments
+              environment: staging
+              managed_by: ansible
+          data: "{{ payments_config }}"
